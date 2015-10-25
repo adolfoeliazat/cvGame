@@ -1,3 +1,4 @@
+import sys
 import random
 import numpy as np
 import cv2 as cv
@@ -8,10 +9,38 @@ def game():
     random.seed()
 
     # Load image
-    img = cv.imread('onepiece.png')
+    if len(sys.argv) > 1:
+        image_game_path = sys.argv[1]
+    else:
+        import os
+
+        my_path = os.path.dirname(os.path.realpath(__file__))
+
+        def is_image_file(name):
+            extension = name[-3:]
+
+            return (extension == 'bmp') or (extension == 'png') or (extension == 'jpg')
+
+        images_files = [f for f in os.listdir(my_path) if is_image_file(f)]
+        image_game_path = random.choice(images_files)
+
+    img = cv.imread(image_game_path)
     height, width = img.shape[:2]
 
-    img_game = np.zeros((height + 100, width, 3), np.uint8)
+    if (height > 720) or (width > 720):
+        # Large images too cause problems
+        percent_to_reduce = 720 * 100 / max(height, width)
+        img = cv.resize(img, (0,0), fx=percent_to_reduce / 100, fy=percent_to_reduce / 100)
+        height, width = img.shape[:2]
+
+    def decide_width():
+        # The width must be at least 400, to fit the game pieces
+        if width > 400:
+            return width
+        else:
+            return 400
+
+    img_game = np.zeros((height + 100, decide_width(), 3), np.uint8)
     img_game[0:height, 0:width] = img
 
     # Create game pieces
