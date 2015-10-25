@@ -45,9 +45,25 @@ def game():
 
         img_game[height + 25:height + 75, 100 * current_piece:50 + 100 * current_piece] = piece
 
+    # Create mouse event
+    def answer(event, x, y, flags, param):
+        if event == cv.EVENT_LBUTTONDOWN:
+            if not (height + 25 <= y <= height + 75):
+                return
+
+            if 50 + 100 * place_piece_success >= x >= 100 * place_piece_success:
+                cv.circle(img_game, (x, y), 10, (255, 0, 0), -1)
+            else:
+                cv.circle(img_game, (x, y), 10, (0, 0, 255), -1)
+
+    cv.namedWindow('image')
+    cv.setMouseCallback('image', answer)
+
     # Start game
-    cv.imshow('image', img_game)
-    cv.waitKey(0)
+    while True:
+        cv.imshow('image', img_game)
+        if cv.waitKey(20) & 0xFF == 27:
+            break
     cv.destroyAllWindows()
 
 
