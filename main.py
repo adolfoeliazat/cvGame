@@ -7,6 +7,7 @@ import copy
 
 def game():
     random.seed()
+    total_pieces = 4
 
     # Load image
     if len(sys.argv) > 1:
@@ -34,18 +35,17 @@ def game():
         height, width = img.shape[:2]
 
     def decide_width():
-        # The width must be at least 400, to fit the game pieces
-        if width > 400:
+        # The width should be able to fit all the game pieces
+        min_width = total_pieces * 100
+        if width > min_width:
             return width
         else:
-            return 400
+            return min_width
 
     img_game = np.zeros((height + 100, decide_width(), 3), np.uint8)
     img_game[0:height, 0:width] = img
 
     # Create game pieces
-    total_pieces = 4
-
     place_piece_success = random.randrange(total_pieces)
 
     def invert_piece(piece):
