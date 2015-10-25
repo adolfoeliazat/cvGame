@@ -7,7 +7,7 @@ import copy
 
 def game():
     random.seed()
-    total_pieces = 4
+    total_pieces = 10
 
     # Load image
     if len(sys.argv) > 1:
@@ -67,7 +67,16 @@ def game():
 
         return piece
 
-    piece_change_functions = [invert_piece, color_red_to_green, color_black_to_blue]
+    def median_filtering(piece):
+        return cv.medianBlur(piece, 5)
+
+    def morph_open(piece):
+        return cv.morphologyEx(piece, cv.MORPH_OPEN, np.ones((5,5), np.uint8))
+
+    def morph_close(piece):
+        return cv.morphologyEx(piece, cv.MORPH_CLOSE, np.ones((3,3), np.uint8))
+
+    piece_change_functions = [invert_piece, color_red_to_green, color_black_to_blue, median_filtering, morph_open, morph_close]
 
     for current_piece in range(total_pieces):
         x = random.randrange(height - 50)
