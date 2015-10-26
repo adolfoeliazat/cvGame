@@ -9,6 +9,7 @@ def game():
     random.seed()
     total_pieces = 10
 
+    ###
     # Load image
     if len(sys.argv) > 1:
         image_game_path = sys.argv[1]
@@ -45,6 +46,7 @@ def game():
     img_game = np.zeros((height + 100, decide_width(), 3), np.uint8)
     img_game[0:height, 0:width] = img
 
+    ###
     # Create game pieces
     place_piece_success = random.randrange(total_pieces)
 
@@ -78,9 +80,14 @@ def game():
 
     piece_change_functions = [invert_piece, color_red_to_green, color_black_to_blue, median_filtering, morph_open, morph_close]
 
+    fast = cv.FastFeatureDetector_create(nonmaxSuppression=True)
+    kp = fast.detect(img_game, None)
+
+    # Remove points close to the edge, it would not be possible to create the part of them
+    kp = [i for i in kp if i.pt[0] + 50 < width and i.pt[1] + 50 < height]
+
     for current_piece in range(total_pieces):
-        x = random.randrange(height - 50)
-        y = random.randrange(width - 50)
+        y, x = random.choice(kp).pt
 
         piece = copy.copy(img[x:x + 50, y:y + 50])
 
@@ -89,6 +96,7 @@ def game():
 
         img_game[height + 25:height + 75, 100 * current_piece:50 + 100 * current_piece] = piece
 
+    ###
     # Create mouse event
     def answer(event, x, y, flags, param):
         if event == cv.EVENT_LBUTTONDOWN:
@@ -103,6 +111,7 @@ def game():
     cv.namedWindow('image')
     cv.setMouseCallback('image', answer)
 
+    ###
     # Start game
     while True:
         cv.imshow('image', img_game)
