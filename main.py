@@ -91,13 +91,22 @@ def game():
     # Remove points close to the edge, it would not be possible to create the part of them
     kp = [i for i in kp if i.pt[0] + 25 < width and i.pt[1] + 25 < height]
 
+    pieces = []
     for current_piece in range(total_pieces):
-        y, x = [i - 25 for i in random.choice(kp).pt]
+        kp_target = random.choice(kp)
+        kp.remove(kp_target)
 
+        y, x = kp_target.pt
+
+        x -= 25
         if x < 0:
             x = 0
+
+        y -= 25
         if y < 0:
             y = 0
+
+        pieces.append({'img_game_pos': (int(y), int(x))})
 
         piece = copy.copy(img[x:x + 50, y:y + 50])
 
@@ -113,10 +122,18 @@ def game():
             if not (height + 25 <= y <= height + 75):
                 return
 
-            if 50 + 100 * place_piece_success >= x >= 100 * place_piece_success:
+            img_clicked, d = divmod(x, 100)
+            if d > 50:
+                # The player clicked on the black part
+                return
+
+            if img_clicked == place_piece_success:
                 cv.circle(img_game, (x, y), 10, (255, 0, 0), -1)
             else:
                 cv.circle(img_game, (x, y), 10, (0, 0, 255), -1)
+
+            y, x = pieces[img_clicked]['img_game_pos']
+            cv.rectangle(img_game, (y, x), (y + 50, x + 50), (127, 127, 127))
 
     cv.namedWindow('image')
     cv.setMouseCallback('image', answer)
