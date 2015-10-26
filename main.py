@@ -1,3 +1,4 @@
+import os
 import sys
 import random
 import numpy as np
@@ -11,20 +12,24 @@ def game():
 
     ###
     # Load image
-    if len(sys.argv) > 1:
-        image_game_path = sys.argv[1]
-    else:
-        import os
-
-        my_path = os.path.dirname(os.path.realpath(__file__))
-
+    def get_random_image_at_path(path):
         def is_image_file(name):
             extension = name[-3:]
 
             return (extension == 'bmp') or (extension == 'png') or (extension == 'jpg')
 
-        images_files = [f for f in os.listdir(my_path) if is_image_file(f)]
-        image_game_path = random.choice(images_files)
+        images_files = [f for f in os.listdir(path) if is_image_file(f)]
+        return os.path.join(path, random.choice(images_files))
+
+    if len(sys.argv) > 1:
+        arg = sys.argv[1]
+        if os.path.isdir(arg):
+            image_game_path = get_random_image_at_path(arg)
+        else:
+            image_game_path = arg
+    else:
+        script_path = os.path.dirname(os.path.realpath(__file__))
+        image_game_path = get_random_image_at_path(script_path)
 
     img = cv.imread(image_game_path)
     height, width = img.shape[:2]
