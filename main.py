@@ -34,9 +34,9 @@ def game():
     img = cv.imread(image_game_path)
     height, width = img.shape[:2]
 
-    if (height > 720) or (width > 720):
+    if (height > 620) or (width > 620):
         # Large images too cause problems
-        percent_to_reduce = 720 * 100 / max(height, width)
+        percent_to_reduce = 620 * 100 / max(height, width)
         img = cv.resize(img, (0,0), fx=percent_to_reduce / 100, fy=percent_to_reduce / 100)
         height, width = img.shape[:2]
 
