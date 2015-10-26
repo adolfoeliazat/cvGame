@@ -89,10 +89,15 @@ def game():
     kp = fast.detect(img_game, None)
 
     # Remove points close to the edge, it would not be possible to create the part of them
-    kp = [i for i in kp if i.pt[0] + 50 < width and i.pt[1] + 50 < height]
+    kp = [i for i in kp if i.pt[0] + 25 < width and i.pt[1] + 25 < height]
 
     for current_piece in range(total_pieces):
-        y, x = random.choice(kp).pt
+        y, x = [i - 25 for i in random.choice(kp).pt]
+
+        if x < 0:
+            x = 0
+        if y < 0:
+            y = 0
 
         piece = copy.copy(img[x:x + 50, y:y + 50])
 
